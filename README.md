@@ -209,3 +209,7 @@ sintéticos. O que permanece é o método.
 ## Requisitos
 
 Python 3.10+ · PyYAML. Mais nada.
+
+## Licença
+
+[MIT](LICENSE)
