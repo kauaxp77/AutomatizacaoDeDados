@@ -1,0 +1,81 @@
+# Regras de extracao — texto do sistema de origem -> campo de saida.
+#
+# Ficam aqui, e nao no codigo, por um motivo pratico: quando o sistema de
+# origem muda a redacao de um ato, o conserto e editar uma linha de texto.
+# Quem faz esse ajuste conhece o dominio, nao necessariamente Python.
+#
+# As expressoes sao regex, aplicadas sobre o texto NORMALIZADO: minusculo,
+# sem acento, espacos colapsados. Escreva os padroes sem acento.
+
+# ------------------------------------------------------------------ decisao
+# A categoria vem depois de "POR". O texto capturado e conferido contra o
+# vocabulario aceito; sem correspondencia, o campo fica vazio e marcado.
+decisao:
+  padroes:
+    - "encerrado o caso por\\s+(?P<categoria>.+?)(?:\\s+\\d{6,}|$)"
+    - "encerrada a analise por\\s+(?P<categoria>.+?)(?:\\s+\\d{6,}|$)"
+
+  # Atos em que a categoria esta no proprio nome, sem "POR".
+  categorias_diretas:
+    - padrao: "declarada incompetencia|remetido a outro setor"
+      valor: "REDIRECIONAMENTO"
+    - padrao: "declarada perda de objeto"
+      valor: "PERDA DE OBJETO"
+
+  # Atos de encerramento que nao dizem a categoria em lugar nenhum.
+  # Reconhecidos para achar a data, mas a categoria sai vazia e marcada.
+  sem_categoria:
+    - "encerrado o caso"
+    - "concluida a analise"
+
+# Vocabulario aceito. Nada fora desta lista e escrito, nunca.
+vocabulario:
+  - "CUMPRIMENTO"
+  - "DESISTENCIA"
+  - "PERDA DE OBJETO"
+  - "PRESCRICAO"
+  - "REDIRECIONAMENTO"
+
+# ------------------------------------------------------------- encerramento
+encerramento:
+  # A data vem no proprio titulo do ato — nao depende de cabecalho de dia.
+  padrao_com_data: "arquivado definitivamente em\\s+(?P<data>\\d{2}/\\d{2}/\\d{4})"
+  padroes:
+    - "arquivado definitivamente"
+
+# ------------------------------------------------- resposta das partes
+#
+# AQUI ESTA A LICAO CENTRAL DO PROJETO.
+#
+# A leitura obvia e a notificacao: ela traz "visualizada em <data>", que parece
+# ser a resposta da parte. Nao e. "Visualizou" e "respondeu" sao eventos
+# diferentes, separados por poucos dias — e a diferenca passa despercebida em
+# qualquer conferencia por amostragem.
+#
+# A fonte correta e a cronologia: a data em que a parte JUNTOU sua
+# manifestacao. Trocar `fonte` para "notificacao" reproduz o erro original e
+# derruba a acuracia de ~90% para ~55%. Rode `python demo.py --comparar`.
+respostas:
+  fonte: "cronologia"          # cronologia | notificacao
+
+  parte_a:
+    padroes_cronologia: ["manifestacao da parte a"]
+    padroes_notificacao: ["parte a"]
+    # primeira = a primeira manifestacao depois da decisao
+    # ultima   = a mais recente da parte
+    # As duas partes nao se comportam igual: medir e mais barato que supor.
+    regra: "ultima"
+
+  parte_b:
+    padroes_cronologia: ["manifestacao da parte b"]
+    padroes_notificacao: ["parte b"]
+    regra: "primeira"
+
+  padrao_visualizacao: "visualizada em\\s+(?P<data>\\d{2}/\\d{2}/\\d{4})"
+  padrao_envio: "enviada em\\s+(?P<data>\\d{2}/\\d{2}/\\d{4})"
+  padrao_destinatario: "destinatario:\\s*(?P<quem>.+?)(?:\\s+enviada|$)"
+
+# Atos que nunca interessam. Evitam poluir a evidencia.
+ignorar:
+  - "recebido o expediente"
+  - "conclusos para analise"

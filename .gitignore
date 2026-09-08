@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+saida/
+*.csv
+*.xlsx
+exemplos/casos/
