@@ -6,3 +6,9 @@ saida/
 *.csv
 *.xlsx
 exemplos/casos/
+
+# Sistema operacional e editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

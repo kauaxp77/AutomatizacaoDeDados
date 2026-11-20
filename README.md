@@ -1,22 +1,39 @@
-# Extrator auditável
+<p align="center">
+  <img src="docs/banner.png" alt="Extrator auditável - extração de dados com validação por backtest" width="100%">
+</p>
 
-Extração de dados de sistemas web legados com **validação por backtest** — e a disciplina de
-não preencher nada sem evidência.
+<h1 align="center">🔎 Extrator auditável</h1>
+
+<p align="center">
+  Extração de dados de sistemas web legados com <b>validação por backtest</b>, e a disciplina de
+  <b>não preencher nada sem evidência</b>.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+">
+  <img src="https://img.shields.io/badge/PyYAML-regras%20em%20YAML-cb171e?style=for-the-badge" alt="PyYAML">
+  <img src="https://img.shields.io/badge/Dados-sint%C3%A9ticos-1e8f3e?style=for-the-badge" alt="Dados sintéticos">
+</p>
+
+<p align="center">
+  <a href="#-sobre-o-projeto">Sobre</a> •
+  <a href="#-o-método">Método</a> •
+  <a href="#-o-que-a-demonstração-mostra">Demonstração</a> •
+  <a href="#️-telas">Telas</a> •
+  <a href="#️-arquitetura">Arquitetura</a> •
+  <a href="#-como-executar">Como executar</a> •
+  <a href="#-estrutura-do-projeto">Estrutura</a>
+</p>
+
+---
+
+## 📌 Sobre o projeto
 
 Automatizar uma leitura é a parte fácil. Saber se a leitura está certa é o trabalho. Este
 repositório é a implementação de referência de um método que nasceu de um projeto real, com
 os dados e o sistema de origem substituídos por equivalentes sintéticos.
 
-```bash
-pip install -r requirements.txt
-python demo.py --comparar
-```
-
-Roda em segundos. Sem sistema externo, sem credencial, sem dado real.
-
----
-
-## O problema
+### O problema
 
 Uma base preenchida à mão, registro por registro, a partir de um sistema web que não tem API.
 Cinco campos por registro, espalhados por duas telas. Milhares de registros.
@@ -27,7 +44,7 @@ A resposta usual — "conferi alguns e pareceu bom" — não resolve. O erro que
 escandaloso; é o de poucos dias, consistente, que passa por qualquer conferência por
 amostragem e contamina tudo que depende dele.
 
-## O método
+## 🧭 O método
 
 Rodar o extrator contra registros **já preenchidos por humanos** e comparar campo a campo.
 
@@ -42,7 +59,7 @@ cobertura = preenchidos / (preenchidos + vazios)   em quantos ele conseguiu resp
 contrário, cobertura alta com acurácia baixa, é o pior resultado possível, porque parece
 produtivo.
 
-## O que a demonstração mostra
+## 🔬 O que a demonstração mostra
 
 ```
 $ python demo.py --comparar
@@ -105,7 +122,18 @@ base preenchida à mão. Como erram para os dois lados, a medição os separa do
 
 Sem isso, a tentação é "corrigir" o extrator até ele reproduzir os erros do gabarito.
 
-## Arquitetura
+## 🖼️ Telas
+
+Saídas reais da demonstração, capturadas rodando os comandos abaixo neste repositório.
+
+<table>
+  <tr>
+    <td align="center"><b><code>python demo.py --comparar</code></b><br><img src="docs/screenshots/comparar.png" alt="Saída de demo.py --comparar"></td>
+    <td align="center"><b><code>python demo.py --detalhar</code></b><br><img src="docs/screenshots/detalhar.png" alt="Saída de demo.py --detalhar"></td>
+  </tr>
+</table>
+
+## 🏗️ Arquitetura
 
 ```
 Fonte  ──►  Caso  ──►  Extrator  ──►  Resultado  ──►  Medição
@@ -157,7 +185,7 @@ Campo(valor=date(2026, 6, 18),
 É o que torna a conferência possível sem reabrir o sistema, e o que permite discutir uma
 divergência olhando o texto em vez de opinião.
 
-## Validação cega
+## 🙈 Validação cega
 
 A regra de leitura foi ajustada olhando um conjunto de casos. Medir na mesma amostra em que se
 ajustou **não é medição, é memorização**.
@@ -170,7 +198,7 @@ python demo.py --semente 7      # amostra que o extrator nunca viu
 No projeto original, o número se manteve na amostra inédita — foi assim que a regra deixou de
 ser palpite.
 
-## Privacidade por construção
+## 🔒 Privacidade por construção
 
 O projeto nasceu sobre dados sensíveis. As decisões que sobreviveram à generalização:
 
@@ -183,7 +211,20 @@ O projeto nasceu sobre dados sensíveis. As decisões que sobreviveram à genera
 - **A credencial nunca passa pelo código.** No projeto original, o robô abre o navegador e
   espera o login humano — o que também o torna imune a mudanças de autenticação.
 
-## Uso
+## 🚀 Como executar
+
+**Pré-requisito:** Python 3.10 ou superior. A única dependência é o PyYAML.
+
+```bash
+git clone https://github.com/kauaxp77/AutomatizacaoDeDados.git
+cd AutomatizacaoDeDados
+pip install -r requirements.txt
+python demo.py --comparar
+```
+
+Roda em segundos. Sem sistema externo, sem credencial, sem dado real.
+
+Opções da demonstração:
 
 ```bash
 python demo.py                  # mede a configuração atual
@@ -193,7 +234,33 @@ python demo.py --n 300          # outro tamanho de amostra
 python demo.py --semente 7      # validação cega
 ```
 
-## Origem
+## 📁 Estrutura do projeto
+
+```
+AutomatizacaoDeDados/
+├── demo.py              # Demonstração: gera casos, extrai, mede e compara regras
+├── requirements.txt     # PyYAML
+├── config/
+│   └── regras.yaml      # Regras de extração, fora do código
+├── src/
+│   ├── modelo.py        # Tipos e o protocolo Fonte
+│   ├── normaliza.py     # Datas e vocabulário controlado
+│   ├── extrator.py      # Regras → campos, com evidência e confiança
+│   ├── medicao.py       # Backtest, acurácia, cobertura e direção das divergências
+│   └── privacidade.py   # Mascaramento dos logs
+├── exemplos/
+│   └── gerar.py         # Casos sintéticos com gabarito conhecido
+└── docs/
+    ├── banner.png
+    └── screenshots/     # Saídas reais da demonstração
+```
+
+## 🛠️ Tecnologias
+
+- **Python 3.10+**: linguagem principal (`dataclasses`, `typing.Protocol`, `argparse`)
+- **PyYAML**: leitura das regras de extração em `config/regras.yaml`
+
+## 🏭 Origem
 
 Extraído de uma automação em produção que lê processos judiciais e preenche uma planilha de
 controle. Naquele contexto, medido contra 84 registros reais preenchidos à mão: **97,6% de
@@ -206,6 +273,8 @@ deles fazia o programa perder silenciosamente todas as datas ao regenerar a saí
 Sistema de origem, seletores, vocabulário e dados foram substituídos por equivalentes
 sintéticos. O que permanece é o método.
 
-## Requisitos
+## 👨‍💻 Autor
 
-Python 3.10+ · PyYAML. Mais nada.
+Desenvolvido por **[kauaxp77](https://github.com/kauaxp77)**
+
+<p align="center">⭐ Se curtiu o projeto, deixe uma estrela!</p>
